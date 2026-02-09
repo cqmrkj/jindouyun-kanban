@@ -60,10 +60,6 @@
             background: #e74c3c;
             animation: pulse 2s infinite;
         }
-        .column-header .count.active {
-            background: #27ae60;
-            animation: pulse 2s infinite;
-        }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -84,7 +80,6 @@
         .task.medium { border-left-color: #f39c12; }
         .task.low { border-left-color: #27ae60; }
         .task.insight { border-left-color: #9b59b6; background: #f8f4fc; }
-        .task.running { border-left-color: #27ae60; background: #f0fff4; }
         .task h3 { font-size: 1em; color: #333; margin-bottom: 8px; }
         .task p { font-size: 0.9em; color: #666; line-height: 1.5; }
         .task .meta {
@@ -105,27 +100,9 @@
             background: #fde8e8;
             color: #e74c3c;
         }
-        .task .tag.running {
+        .task .tag.new {
             background: #e8fdf0;
             color: #27ae60;
-        }
-        .progress-bar {
-            height: 6px;
-            background: #eee;
-            border-radius: 3px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-        .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            border-radius: 3px;
-            animation: progress 2s ease-in-out infinite;
-        }
-        @keyframes progress {
-            0% { width: 20%; }
-            50% { width: 60%; }
-            100% { width: 20%; }
         }
         .stats {
             display: grid;
@@ -142,25 +119,11 @@
         }
         .stat-card .number { font-size: 2em; color: #667eea; font-weight: bold; }
         .stat-card .number.highlight { color: #e74c3c; }
-        .stat-card .number.active { color: #27ae60; }
         .stat-card .label { color: #666; margin-top: 5px; }
         .empty-state {
             text-align: center;
             padding: 30px;
             color: #999;
-        }
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid #27ae60;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-            margin-right: 6px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -174,11 +137,11 @@
 
         <div class="stats">
             <div class="stat-card">
-                <div class="number active">2</div>
-                <div class="label">🔄 进行中</div>
+                <div class="number">0</div>
+                <div class="label">进行中</div>
             </div>
             <div class="stat-card">
-                <div class="number">5</div>
+                <div class="number">7</div>
                 <div class="label">今日完成</div>
             </div>
             <div class="stat-card">
@@ -186,7 +149,7 @@
                 <div class="label">计划中</div>
             </div>
             <div class="stat-card">
-                <div class="number highlight">3</div>
+                <div class="number highlight">5</div>
                 <div class="label">⚡ 洞察发现</div>
             </div>
         </div>
@@ -196,25 +159,11 @@
                 <div class="column-header">
                     <span class="icon">🔄</span>
                     <h2>进行中</h2>
-                    <span class="count active">2</span>
+                    <span class="count">0</span>
                 </div>
-                <div class="task running">
-                    <h3><span class="spinner"></span>🤖 拓客小博士AI增强方案</h3>
-                    <p>研究RAG知识库、多模态能力、智能体协作设计</p>
-                    <div class="progress-bar"><div class="fill"></div></div>
-                    <div class="meta">
-                        <span class="tag running">研究中</span>
-                        <span>预计 30min</span>
-                    </div>
-                </div>
-                <div class="task running">
-                    <h3><span class="spinner"></span>📈 增长团队数据探索</h3>
-                    <p>了解增长实验、数据分析，找支持机会</p>
-                    <div class="progress-bar"><div class="fill"></div></div>
-                    <div class="meta">
-                        <span class="tag running">探索中</span>
-                        <span>预计 20min</span>
-                    </div>
+                <div class="empty-state">
+                    <p>✨ 刚刚完成一波任务</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">随时待命接收新指令</p>
                 </div>
             </div>
 
@@ -222,11 +171,27 @@
                 <div class="column-header">
                     <span class="icon">✅</span>
                     <h2>今日完成</h2>
-                    <span class="count">5</span>
+                    <span class="count">7</span>
+                </div>
+                <div class="task low">
+                    <h3>🤖 拓客小博士AI增强方案</h3>
+                    <p>RAG知识库 + 多模态 + 智能体协作完整方案</p>
+                    <div class="meta">
+                        <span class="tag new">NEW</span>
+                        <span>✓ 14:06</span>
+                    </div>
+                </div>
+                <div class="task low">
+                    <h3>📈 增长团队数据探索</h3>
+                    <p>团队现状分析 + 5个支持机会点</p>
+                    <div class="meta">
+                        <span class="tag new">NEW</span>
+                        <span>✓ 14:04</span>
+                    </div>
                 </div>
                 <div class="task low">
                     <h3>🔍 竞品动态调研</h3>
-                    <p>调研有赞、美问、博卡、过简、客满满近期动态</p>
+                    <p>有赞、美问、博卡、过简、客满满</p>
                     <div class="meta">
                         <span class="tag">竞品分析</span>
                         <span>✓ 13:00</span>
@@ -234,34 +199,34 @@
                 </div>
                 <div class="task low">
                     <h3>💻 拓客小博士代码分析</h3>
-                    <p>分析 DrGrowth 代码库，发现安全/性能改进点</p>
+                    <p>安全/性能改进点 + P0-P3优先级建议</p>
                     <div class="meta">
                         <span class="tag">技术研究</span>
                         <span>✓ 12:59</span>
                     </div>
                 </div>
                 <div class="task low">
+                    <h3>🖥️ 工作看板上线</h3>
+                    <p>创建看板 + 部署GitHub Pages</p>
+                    <div class="meta">
+                        <span class="tag">工具建设</span>
+                        <span>✓ 13:20</span>
+                    </div>
+                </div>
+                <div class="task low">
                     <h3>📚 Obsidian 知识库探索</h3>
-                    <p>了解茂日产品矩阵、2026战略规划</p>
+                    <p>产品矩阵、2026战略规划</p>
                     <div class="meta">
                         <span class="tag">信息收集</span>
                         <span>✓ 12:55</span>
                     </div>
                 </div>
                 <div class="task low">
-                    <h3>⏰ 每日简报定时任务</h3>
-                    <p>设置每天 7:30 自动发送工作简报到 Discord</p>
+                    <h3>⏰ 每日简报 + 记忆初始化</h3>
+                    <p>7:30定时任务 + 竞品/仓库/产品记录</p>
                     <div class="meta">
                         <span class="tag">自动化</span>
                         <span>✓ 10:53</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>🖥️ 工作看板上线</h3>
-                    <p>创建看板、部署GitHub Pages</p>
-                    <div class="meta">
-                        <span class="tag">工具建设</span>
-                        <span>✓ 13:20</span>
                     </div>
                 </div>
             </div>
@@ -273,7 +238,7 @@
                     <span class="count">2</span>
                 </div>
                 <div class="task medium">
-                    <h3>🔗 GitHub 代码库接入</h3>
+                    <h3>🔗 GitHub 代码库监控</h3>
                     <p>等待账号配置，接入后开始监控代码动态</p>
                     <div class="meta">
                         <span class="tag">待账号</span>
@@ -292,29 +257,44 @@
                 <div class="column-header">
                     <span class="icon">💡</span>
                     <h2>洞察 & 发现</h2>
-                    <span class="count alert">3</span>
+                    <span class="count alert">5</span>
                 </div>
                 <div class="task insight high">
                     <h3>⚠️ 有赞AI智能体战略</h3>
-                    <p>2025年5月发布多款AI智能体（碰碰贴、客服托管、营销专家），转向"智能体系统"定位，服务5万+商家</p>
+                    <p>2025年5月发布多款AI智能体，转向"智能体系统"定位，服务5万+商家</p>
                     <div class="meta">
                         <span class="tag danger">竞争威胁</span>
-                        <span>需关注</span>
+                    </div>
+                </div>
+                <div class="task insight">
+                    <h3>🎯 差异化定位建议</h3>
+                    <p>垂直深耕美业差评 + 效果闭环追踪 + 门店个性化知识库，与有赞"广而全"打差异</p>
+                    <div class="meta">
+                        <span class="tag new">NEW</span>
+                        <span>战略建议</span>
+                    </div>
+                </div>
+                <div class="task insight">
+                    <h3>💾 RAG方案：Supabase pgvector</h3>
+                    <p>零迁移成本，2-3周可上线，月增成本$70-150</p>
+                    <div class="meta">
+                        <span class="tag new">NEW</span>
+                        <span>技术方案</span>
                     </div>
                 </div>
                 <div class="task insight medium">
                     <h3>🔧 拓客小博士安全问题</h3>
-                    <p>发现 API key 调试日志、缺少内容长度限制和速率限制，建议优先修复</p>
+                    <p>API key日志、缺少速率限制 — P0优先修复</p>
                     <div class="meta">
-                        <span class="tag">P0 修复</span>
-                        <span>技术债务</span>
+                        <span class="tag">技术债务</span>
                     </div>
                 </div>
                 <div class="task insight">
-                    <h3>📈 行业趋势</h3>
-                    <p>美业AI营销渗透率已达47.2%，2026年是"智能体时代"元年，竞争焦点从模型能力转向落地能力</p>
+                    <h3>📊 增长团队基建缺失</h3>
+                    <p>实验/数据分析目录为空，需搭建增长实验模板和数据框架</p>
                     <div class="meta">
-                        <span class="tag">战略参考</span>
+                        <span class="tag new">NEW</span>
+                        <span>支持机会</span>
                     </div>
                 </div>
             </div>
