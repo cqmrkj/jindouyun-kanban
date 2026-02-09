@@ -1,61 +1,93 @@
 {
-  "lastUpdate": "2026-02-09T12:57:00+08:00",
+  "lastUpdate": "2026-02-10T02:10:00+08:00",
   "inProgress": [
     {
-      "id": "competitor-research",
-      "title": "🔍 竞品动态调研",
-      "desc": "调研有赞、美问、博卡、过简、客满满近期动态",
-      "progress": 40,
+      "id": "agent-teams-trial",
+      "title": "🤖 Agent Teams 试跑",
+      "desc": "用Agent Teams双视角审查拓客小博士代码（安全+性能）",
+      "progress": 30,
       "priority": "high",
-      "tag": "竞品分析",
-      "eta": "30min"
+      "tag": "技术探索",
+      "eta": "进行中"
     },
     {
-      "id": "drgrowth-analysis",
-      "title": "💻 拓客小博士代码分析",
-      "desc": "研究 be-mrkj-DrGrowth 代码库，找改进机会",
-      "progress": 100,
+      "id": "competitor-research-v2",
+      "title": "🔍 竞品调研报告（深度版）",
+      "desc": "重写竞品调研，补充数据、案例、用户评价",
+      "progress": 0,
       "priority": "high",
-      "tag": "技术研究",
-      "status": "completed"
+      "tag": "竞品分析",
+      "eta": "Day 2"
     }
   ],
   "completed": [
     {
+      "id": "agent-teams-research",
+      "title": "📄 Agent Teams 深度调研",
+      "desc": "8个信息源，飞书文档已创建",
+      "completedAt": "02:00",
+      "link": "https://feishu.cn/docx/L4aZdI8EkoIfUGxz3UmcgQBIndb"
+    },
+    {
+      "id": "day1-retro",
+      "title": "📝 Day 1 复盘与自我进化",
+      "desc": "质量标准确立、经验教训总结",
+      "completedAt": "01:50",
+      "link": "https://feishu.cn/docx/ZW9rdJVASo"
+    },
+    {
+      "id": "beauty-research",
+      "title": "💆 美业行业深度研究",
+      "desc": "市场规模、技术趋势、增长机会",
+      "completedAt": "2/9 18:00",
+      "link": "https://feishu.cn/docx/BQwqd7pS1o"
+    },
+    {
+      "id": "ai-enhancement",
+      "title": "🤖 拓客小博士AI增强方案",
+      "desc": "RAG、多模态、agent协作方案",
+      "completedAt": "2/9 17:00",
+      "link": "https://feishu.cn/docx/Ug90dJgJBo"
+    },
+    {
+      "id": "drgrowth-analysis",
+      "title": "💻 拓客小博士代码分析",
+      "desc": "架构分析+P0安全问题发现",
+      "completedAt": "2/9 14:00",
+      "link": "https://feishu.cn/docx/TNgXdmtlLo"
+    },
+    {
+      "id": "competitor-research-v1",
+      "title": "🔍 竞品调研（初版，待重写）",
+      "desc": "有赞/美问/博卡/客满满基础调研",
+      "completedAt": "2/9 13:00",
+      "link": "https://feishu.cn/docx/BNzFd6hM1o"
+    },
+    {
       "id": "obsidian-explore",
-      "title": "📚 Obsidian 知识库探索",
-      "desc": "了解茂日产品矩阵、2026战略规划",
-      "completedAt": "12:55"
+      "title": "📚 Obsidian知识库探索",
+      "desc": "产品矩阵、2026战略、团队信息",
+      "completedAt": "2/9 12:55"
     },
     {
       "id": "cron-setup",
-      "title": "⏰ 每日简报定时任务",
-      "desc": "设置每天 7:30 自动发送工作简报到 Discord",
-      "completedAt": "10:53"
-    },
-    {
-      "id": "memory-init",
-      "title": "🧠 记忆库初始化",
-      "desc": "记录竞品清单、代码仓库、产品矩阵",
-      "completedAt": "12:56"
+      "title": "⏰ 每日简报cron任务",
+      "desc": "08:00早间/18:00晚间/23:00复盘",
+      "completedAt": "2/9 10:53"
     }
   ],
   "planned": [
     {
-      "id": "github-access",
-      "title": "🔗 GitHub 代码库接入",
-      "desc": "等待账号配置，接入后开始监控代码动态",
-      "blocked": "待账号"
+      "id": "fix-feishu-400",
+      "title": "🔧 修复飞书API 400问题",
+      "desc": "长内容写入失败，需排查原因",
+      "priority": "medium"
     },
     {
-      "id": "competitor-monitor",
-      "title": "📊 竞品监控自动化",
-      "desc": "建立竞品官网/公众号定期监控机制"
-    },
-    {
-      "id": "ai-enhancement",
-      "title": "🤖 AI 能力增强建议",
-      "desc": "研究如何增强拓客小博士的 AI 内容生成能力"
+      "id": "fix-cron-retro",
+      "title": "🔧 修复23:00复盘cron",
+      "desc": "任务执行失败，empty response",
+      "priority": "medium"
     },
     {
       "id": "growth-tracking",
@@ -63,5 +95,9 @@
       "desc": "了解增长团队实验，提供数据分析支持"
     }
   ],
-  "insights": []
+  "insights": [
+    "Day 1教训：质量>速度>数量",
+    "飞书文档已成为主要产出渠道",
+    "Agent Teams可用于代码审查和架构决策"
+  ]
 }
