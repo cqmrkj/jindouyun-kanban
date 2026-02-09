@@ -1,23 +1,14 @@
 {
-  "lastUpdate": "2026-02-10T02:10:00+08:00",
+  "lastUpdate": "2026-02-10T02:18:00+08:00",
   "inProgress": [
     {
-      "id": "agent-teams-trial",
-      "title": "🤖 Agent Teams 试跑",
-      "desc": "用Agent Teams双视角审查拓客小博士代码（安全+性能）",
-      "progress": 30,
-      "priority": "high",
-      "tag": "技术探索",
-      "eta": "进行中"
-    },
-    {
-      "id": "competitor-research-v2",
-      "title": "🔍 竞品调研报告（深度版）",
-      "desc": "重写竞品调研，补充数据、案例、用户评价",
-      "progress": 0,
-      "priority": "high",
-      "tag": "竞品分析",
-      "eta": "Day 2"
+      "id": "xiaohongshu-skill",
+      "title": "📕 小红书种草文案生成Skill",
+      "desc": "拓客小博士新功能：点击生成小红书种草文案（美甲行业MVP）",
+      "progress": 5,
+      "priority": "P0",
+      "tag": "产品开发",
+      "eta": "调研中"
     }
   ],
   "completed": [
@@ -31,73 +22,43 @@
     {
       "id": "day1-retro",
       "title": "📝 Day 1 复盘与自我进化",
-      "desc": "质量标准确立、经验教训总结",
-      "completedAt": "01:50",
-      "link": "https://feishu.cn/docx/ZW9rdJVASo"
+      "completedAt": "01:50"
     },
     {
       "id": "beauty-research",
       "title": "💆 美业行业深度研究",
-      "desc": "市场规模、技术趋势、增长机会",
-      "completedAt": "2/9 18:00",
-      "link": "https://feishu.cn/docx/BQwqd7pS1o"
+      "completedAt": "2/9 18:00"
     },
     {
       "id": "ai-enhancement",
       "title": "🤖 拓客小博士AI增强方案",
-      "desc": "RAG、多模态、agent协作方案",
-      "completedAt": "2/9 17:00",
-      "link": "https://feishu.cn/docx/Ug90dJgJBo"
+      "completedAt": "2/9 17:00"
     },
     {
       "id": "drgrowth-analysis",
       "title": "💻 拓客小博士代码分析",
-      "desc": "架构分析+P0安全问题发现",
-      "completedAt": "2/9 14:00",
-      "link": "https://feishu.cn/docx/TNgXdmtlLo"
+      "completedAt": "2/9 14:00"
     },
     {
       "id": "competitor-research-v1",
-      "title": "🔍 竞品调研（初版，待重写）",
-      "desc": "有赞/美问/博卡/客满满基础调研",
-      "completedAt": "2/9 13:00",
-      "link": "https://feishu.cn/docx/BNzFd6hM1o"
-    },
-    {
-      "id": "obsidian-explore",
-      "title": "📚 Obsidian知识库探索",
-      "desc": "产品矩阵、2026战略、团队信息",
-      "completedAt": "2/9 12:55"
-    },
-    {
-      "id": "cron-setup",
-      "title": "⏰ 每日简报cron任务",
-      "desc": "08:00早间/18:00晚间/23:00复盘",
-      "completedAt": "2/9 10:53"
+      "title": "🔍 竞品调研初版",
+      "completedAt": "2/9 13:00"
     }
   ],
   "planned": [
     {
+      "id": "competitor-research-v2",
+      "title": "🔍 竞品调研深度版",
+      "priority": "high"
+    },
+    {
       "id": "fix-feishu-400",
-      "title": "🔧 修复飞书API 400问题",
-      "desc": "长内容写入失败，需排查原因",
-      "priority": "medium"
-    },
-    {
-      "id": "fix-cron-retro",
-      "title": "🔧 修复23:00复盘cron",
-      "desc": "任务执行失败，empty response",
-      "priority": "medium"
-    },
-    {
-      "id": "growth-tracking",
-      "title": "📈 增长实验追踪",
-      "desc": "了解增长团队实验，提供数据分析支持"
+      "title": "🔧 修复飞书API 400问题"
     }
   ],
   "insights": [
-    "Day 1教训：质量>速度>数量",
-    "飞书文档已成为主要产出渠道",
-    "Agent Teams可用于代码审查和架构决策"
+    "质量>速度>数量",
+    "大功能优先Agent Teams",
+    "绝不空闲，永远创造价值"
   ]
 }
