@@ -60,6 +60,10 @@
             background: #e74c3c;
             animation: pulse 2s infinite;
         }
+        .column-header .count.active {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
@@ -80,6 +84,7 @@
         .task.medium { border-left-color: #f39c12; }
         .task.low { border-left-color: #27ae60; }
         .task.insight { border-left-color: #9b59b6; background: #f8f4fc; }
+        .task.running { border-left-color: #27ae60; background: #f0fff4; }
         .task h3 { font-size: 1em; color: #333; margin-bottom: 8px; }
         .task p { font-size: 0.9em; color: #666; line-height: 1.5; }
         .task .meta {
@@ -100,6 +105,10 @@
             background: #fde8e8;
             color: #e74c3c;
         }
+        .task .tag.running {
+            background: #e8fdf0;
+            color: #27ae60;
+        }
         .progress-bar {
             height: 6px;
             background: #eee;
@@ -109,9 +118,14 @@
         }
         .progress-bar .fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
             border-radius: 3px;
-            transition: width 0.5s;
+            animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0% { width: 20%; }
+            50% { width: 60%; }
+            100% { width: 20%; }
         }
         .stats {
             display: grid;
@@ -128,11 +142,25 @@
         }
         .stat-card .number { font-size: 2em; color: #667eea; font-weight: bold; }
         .stat-card .number.highlight { color: #e74c3c; }
+        .stat-card .number.active { color: #27ae60; }
         .stat-card .label { color: #666; margin-top: 5px; }
         .empty-state {
             text-align: center;
             padding: 30px;
             color: #999;
+        }
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #27ae60;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -146,15 +174,15 @@
 
         <div class="stats">
             <div class="stat-card">
-                <div class="number">0</div>
-                <div class="label">进行中</div>
+                <div class="number active">2</div>
+                <div class="label">🔄 进行中</div>
             </div>
             <div class="stat-card">
                 <div class="number">5</div>
                 <div class="label">今日完成</div>
             </div>
             <div class="stat-card">
-                <div class="number">4</div>
+                <div class="number">2</div>
                 <div class="label">计划中</div>
             </div>
             <div class="stat-card">
@@ -168,11 +196,25 @@
                 <div class="column-header">
                     <span class="icon">🔄</span>
                     <h2>进行中</h2>
-                    <span class="count">0</span>
+                    <span class="count active">2</span>
                 </div>
-                <div class="empty-state">
-                    <p>✨ 当前没有进行中的任务</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;">随时准备接收新任务</p>
+                <div class="task running">
+                    <h3><span class="spinner"></span>🤖 拓客小博士AI增强方案</h3>
+                    <p>研究RAG知识库、多模态能力、智能体协作设计</p>
+                    <div class="progress-bar"><div class="fill"></div></div>
+                    <div class="meta">
+                        <span class="tag running">研究中</span>
+                        <span>预计 30min</span>
+                    </div>
+                </div>
+                <div class="task running">
+                    <h3><span class="spinner"></span>📈 增长团队数据探索</h3>
+                    <p>了解增长实验、数据分析，找支持机会</p>
+                    <div class="progress-bar"><div class="fill"></div></div>
+                    <div class="meta">
+                        <span class="tag running">探索中</span>
+                        <span>预计 20min</span>
+                    </div>
                 </div>
             </div>
 
@@ -215,11 +257,11 @@
                     </div>
                 </div>
                 <div class="task low">
-                    <h3>🧠 记忆库初始化</h3>
-                    <p>记录竞品清单、代码仓库、产品矩阵</p>
+                    <h3>🖥️ 工作看板上线</h3>
+                    <p>创建看板、部署GitHub Pages</p>
                     <div class="meta">
-                        <span class="tag">知识管理</span>
-                        <span>✓ 12:56</span>
+                        <span class="tag">工具建设</span>
+                        <span>✓ 13:20</span>
                     </div>
                 </div>
             </div>
@@ -228,7 +270,7 @@
                 <div class="column-header">
                     <span class="icon">📋</span>
                     <h2>计划中</h2>
-                    <span class="count">4</span>
+                    <span class="count">2</span>
                 </div>
                 <div class="task medium">
                     <h3>🔗 GitHub 代码库接入</h3>
@@ -242,20 +284,6 @@
                     <p>建立竞品官网/公众号定期监控机制</p>
                     <div class="meta">
                         <span class="tag">自动化</span>
-                    </div>
-                </div>
-                <div class="task medium">
-                    <h3>🤖 AI 能力增强建议</h3>
-                    <p>研究如何增强拓客小博士的 AI 内容生成能力</p>
-                    <div class="meta">
-                        <span class="tag">产品建议</span>
-                    </div>
-                </div>
-                <div class="task">
-                    <h3>📈 增长实验追踪</h3>
-                    <p>了解增长团队实验，提供数据分析支持</p>
-                    <div class="meta">
-                        <span class="tag">数据分析</span>
                     </div>
                 </div>
             </div>
