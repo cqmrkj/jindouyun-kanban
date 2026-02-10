@@ -1,17 +1,14 @@
 {
   "lastUpdate": "2026-02-10T12:52:00+08:00",
   "inProgress": [
-    {
-      "id": "xiaohongshu-skill",
-      "title": "📕 小红书种草文案生成Skill",
-      "desc": "美甲行业MVP：Prompt模板+demo脚本+集成说明",
-      "progress": 20,
-      "priority": "P0",
-      "tag": "产品开发",
-      "eta": "今日完成"
-    }
   ],
   "completed": [
+    {
+      "id": "xiaohongshu-skill",
+      "title": "📕 小红书种草文案生成Skill MVP",
+      "desc": "Prompt模板+生成器+Demo+集成示例，美甲行业先行",
+      "completedAt": "12:55"
+    },
     {
       "id": "competitor-research-v2",
       "title": "🔍 竞品调研深度版",
