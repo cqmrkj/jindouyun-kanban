@@ -13,20 +13,31 @@
             padding: 20px;
         }
         .container { max-width: 1400px; margin: 0 auto; }
-        header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
+        header { text-align: center; color: white; margin-bottom: 30px; }
         header h1 { font-size: 2.5em; margin-bottom: 10px; }
         header p { opacity: 0.9; font-size: 1.1em; }
-        .update-time { 
-            background: rgba(255,255,255,0.2); 
-            padding: 8px 16px; 
-            border-radius: 20px; 
+        .update-time {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
             display: inline-block;
             margin-top: 10px;
         }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card .number { font-size: 2em; color: #667eea; font-weight: bold; }
+        .stat-card .label { color: #666; margin-top: 5px; }
         .board {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -56,14 +67,6 @@
             font-size: 0.9em;
             margin-left: auto;
         }
-        .column-header .count.alert {
-            background: #e74c3c;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
         .task {
             background: #f8f9fa;
             border-radius: 12px;
@@ -76,54 +79,32 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .task.high { border-left-color: #e74c3c; }
-        .task.medium { border-left-color: #f39c12; }
-        .task.low { border-left-color: #27ae60; }
+        .task.p0 { border-left-color: #e74c3c; }
+        .task.p1 { border-left-color: #f39c12; }
+        .task.p2 { border-left-color: #27ae60; }
+        .task.completed { border-left-color: #27ae60; }
         .task.insight { border-left-color: #9b59b6; background: #f8f4fc; }
         .task h3 { font-size: 1em; color: #333; margin-bottom: 8px; }
         .task p { font-size: 0.9em; color: #666; line-height: 1.5; }
         .task .meta {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            font-size: 0.8em;
-            color: #888;
-            flex-wrap: wrap;
+            display: flex; gap: 10px; margin-top: 12px;
+            font-size: 0.8em; color: #888; flex-wrap: wrap;
         }
         .task .tag {
-            background: #e8f4fd;
-            color: #3498db;
-            padding: 2px 8px;
-            border-radius: 4px;
+            background: #e8f4fd; color: #3498db;
+            padding: 2px 8px; border-radius: 4px;
         }
-        .task .tag.danger {
-            background: #fde8e8;
-            color: #e74c3c;
+        .task .tag.danger { background: #fde8e8; color: #e74c3c; }
+        .task .tag.new { background: #e8fdf0; color: #27ae60; }
+        .task a { color: #667eea; text-decoration: none; }
+        .task a:hover { text-decoration: underline; }
+        .empty-state { text-align: center; padding: 30px; color: #999; }
+        .progress-bar {
+            height: 6px; background: #eee; border-radius: 3px; margin-top: 8px;
         }
-        .task .tag.new {
-            background: #e8fdf0;
-            color: #27ae60;
-        }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .stat-card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .stat-card .number { font-size: 2em; color: #667eea; font-weight: bold; }
-        .stat-card .number.highlight { color: #e74c3c; }
-        .stat-card .label { color: #666; margin-top: 5px; }
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: #999;
+        .progress-bar .fill {
+            height: 100%; border-radius: 3px; background: #667eea;
+            transition: width 0.3s;
         }
     </style>
 </head>
@@ -132,213 +113,92 @@
         <header>
             <h1>☁️ 筋斗云工作看板</h1>
             <p>小飞的 AI 超级助理 · 实时工作状态</p>
-            <div class="update-time" id="updateTime">最后更新：加载中...</div>
+            <div class="update-time" id="updateTime">加载中...</div>
         </header>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="number">0</div>
-                <div class="label">进行中</div>
-            </div>
-            <div class="stat-card">
-                <div class="number">10</div>
-                <div class="label">今日完成</div>
-            </div>
-            <div class="stat-card">
-                <div class="number">2</div>
-                <div class="label">计划中</div>
-            </div>
-            <div class="stat-card">
-                <div class="number highlight">6</div>
-                <div class="label">⚡ 洞察发现</div>
-            </div>
-        </div>
-
-        <div class="board">
-            <div class="column">
-                <div class="column-header">
-                    <span class="icon">🔄</span>
-                    <h2>进行中</h2>
-                    <span class="count">0</span>
-                </div>
-                <div class="empty-state">
-                    <p>✨ 任务完成，寻找下一个目标...</p>
-                </div>
-            </div>
-
-            <div class="column">
-                <div class="column-header">
-                    <span class="icon">✅</span>
-                    <h2>今日完成</h2>
-                    <span class="count">10</span>
-                </div>
-                <div class="task low">
-                    <h3>📊 美业行业深度研究</h3>
-                    <p>市场规模、AI趋势、痛点挖掘、机会识别</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>✓ 14:16</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>📋 增长实验模板</h3>
-                    <p>实验规范 + 可复用模板 + 指标定义（已放入Obsidian）</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>✓ 14:10</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>🔍 竞品监控方案</h3>
-                    <p>监控脚本 + 4竞品初始快照 + 零成本方案</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>✓ 14:12</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>🤖 拓客小博士AI增强方案</h3>
-                    <p>RAG知识库 + 多模态 + 智能体协作完整方案</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>✓ 14:06</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>📈 增长团队数据探索</h3>
-                    <p>团队现状分析 + 5个支持机会点</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>✓ 14:04</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>🔍 竞品动态调研</h3>
-                    <p>有赞、美问、博卡、过简、客满满</p>
-                    <div class="meta">
-                        <span class="tag">竞品分析</span>
-                        <span>✓ 13:00</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>💻 拓客小博士代码分析</h3>
-                    <p>安全/性能改进点 + P0-P3优先级建议</p>
-                    <div class="meta">
-                        <span class="tag">技术研究</span>
-                        <span>✓ 12:59</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>🖥️ 工作看板上线</h3>
-                    <p>创建看板 + 部署GitHub Pages</p>
-                    <div class="meta">
-                        <span class="tag">工具建设</span>
-                        <span>✓ 13:20</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>📚 Obsidian 知识库探索</h3>
-                    <p>产品矩阵、2026战略规划</p>
-                    <div class="meta">
-                        <span class="tag">信息收集</span>
-                        <span>✓ 12:55</span>
-                    </div>
-                </div>
-                <div class="task low">
-                    <h3>⏰ 每日简报 + 记忆初始化</h3>
-                    <p>7:30定时任务 + 竞品/仓库/产品记录</p>
-                    <div class="meta">
-                        <span class="tag">自动化</span>
-                        <span>✓ 10:53</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="column">
-                <div class="column-header">
-                    <span class="icon">📋</span>
-                    <h2>计划中</h2>
-                    <span class="count">1</span>
-                </div>
-                <div class="task medium">
-                    <h3>🔗 GitHub 代码库监控</h3>
-                    <p>等待账号配置，接入后开始监控代码动态</p>
-                    <div class="meta">
-                        <span class="tag">待账号</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="column">
-                <div class="column-header">
-                    <span class="icon">💡</span>
-                    <h2>洞察 & 发现</h2>
-                    <span class="count alert">6</span>
-                </div>
-                <div class="task insight">
-                    <h3>📈 美业AI渗透加速</h3>
-                    <p>72%高端品牌将AI列为核心战略，自动化营销SOP转化率比人工提升40-50%</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>行业趋势</span>
-                    </div>
-                </div>
-                <div class="task insight high">
-                    <h3>⚠️ 有赞AI智能体战略</h3>
-                    <p>2025年5月发布多款AI智能体，转向"智能体系统"定位，服务5万+商家</p>
-                    <div class="meta">
-                        <span class="tag danger">竞争威胁</span>
-                    </div>
-                </div>
-                <div class="task insight">
-                    <h3>🎯 差异化定位建议</h3>
-                    <p>垂直深耕美业差评 + 效果闭环追踪 + 门店个性化知识库，与有赞"广而全"打差异</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>战略建议</span>
-                    </div>
-                </div>
-                <div class="task insight">
-                    <h3>💾 RAG方案：Supabase pgvector</h3>
-                    <p>零迁移成本，2-3周可上线，月增成本$70-150</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>技术方案</span>
-                    </div>
-                </div>
-                <div class="task insight medium">
-                    <h3>🔧 拓客小博士安全问题</h3>
-                    <p>API key日志、缺少速率限制 — P0优先修复</p>
-                    <div class="meta">
-                        <span class="tag">技术债务</span>
-                    </div>
-                </div>
-                <div class="task insight">
-                    <h3>📊 增长团队基建缺失</h3>
-                    <p>实验/数据分析目录为空，需搭建增长实验模板和数据框架</p>
-                    <div class="meta">
-                        <span class="tag new">NEW</span>
-                        <span>支持机会</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="stats" id="stats"></div>
+        <div class="board" id="board"></div>
     </div>
-
     <script>
-        function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleString('zh-CN', { 
-                month: 'numeric', 
-                day: 'numeric',
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            document.getElementById('updateTime').textContent = '最后更新：' + timeStr;
+    async function load() {
+        try {
+            const r = await fetch('status.json?' + Date.now());
+            const d = await r.json();
+            render(d);
+        } catch(e) {
+            document.getElementById('board').innerHTML = '<p style="color:white;text-align:center">加载失败: ' + e.message + '</p>';
         }
-        updateTime();
-        setInterval(updateTime, 1000);
+    }
+
+    function render(d) {
+        // Update time
+        document.getElementById('updateTime').textContent = '数据更新：' + d.lastUpdate;
+
+        // Stats
+        const ip = (d.inProgress || []).length;
+        const done = (d.completed || []).length;
+        const plan = (d.planned || []).length;
+        const ins = (d.insights || []).length;
+        document.getElementById('stats').innerHTML = `
+            <div class="stat-card"><div class="number">${ip}</div><div class="label">进行中</div></div>
+            <div class="stat-card"><div class="number">${done}</div><div class="label">已完成</div></div>
+            <div class="stat-card"><div class="number">${plan}</div><div class="label">计划中</div></div>
+            <div class="stat-card"><div class="number">${ins}</div><div class="label">💡 洞察</div></div>
+        `;
+
+        // Board
+        let html = '';
+
+        // In Progress
+        html += col('🔄', '进行中', ip, (d.inProgress || []).map(t => taskCard(t, 'ip')).join('') || '<div class="empty-state">✨ 暂无进行中任务</div>');
+
+        // Completed
+        html += col('✅', '已完成', done, (d.completed || []).map(t => taskCard(t, 'done')).join(''));
+
+        // Planned
+        html += col('📋', '计划中', plan, (d.planned || []).map(t => taskCard(t, 'plan')).join('') || '<div class="empty-state">暂无计划</div>');
+
+        document.getElementById('board').innerHTML = html;
+    }
+
+    function col(icon, title, count, content) {
+        return `<div class="column">
+            <div class="column-header">
+                <span class="icon">${icon}</span>
+                <h2>${title}</h2>
+                <span class="count">${count}</span>
+            </div>
+            ${content}
+        </div>`;
+    }
+
+    function taskCard(t, type) {
+        let cls = type === 'done' ? 'completed' : '';
+        if (t.priority === 'P0') cls = 'p0';
+        else if (t.priority === 'P1') cls = 'p1';
+        else if (t.priority === 'P2') cls = 'p2';
+
+        let meta = '';
+        if (t.tag) meta += `<span class="tag">${t.tag}</span>`;
+        if (t.priority) meta += `<span class="tag ${t.priority === 'P0' ? 'danger' : ''}">${t.priority}</span>`;
+        if (t.completedAt) meta += `<span>✓ ${t.completedAt}</span>`;
+        if (t.eta) meta += `<span>⏰ ${t.eta}</span>`;
+        if (t.link) meta += `<a href="${t.link}" target="_blank">📄 文档</a>`;
+
+        let progress = '';
+        if (t.progress != null && type === 'ip') {
+            progress = `<div class="progress-bar"><div class="fill" style="width:${t.progress}%"></div></div>`;
+        }
+
+        return `<div class="task ${cls}">
+            <h3>${t.title || t.id}</h3>
+            ${t.desc ? '<p>' + t.desc + '</p>' : ''}
+            ${progress}
+            ${meta ? '<div class="meta">' + meta + '</div>' : ''}
+        </div>`;
+    }
+
+    load();
+    setInterval(load, 30000); // 30秒自动刷新
     </script>
 </body>
 </html>
