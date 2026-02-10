@@ -1,71 +1,75 @@
 {
-  "lastUpdate": "2026-02-10T10:30:00+08:00",
+  "lastUpdate": "2026-02-10T12:52:00+08:00",
   "inProgress": [
     {
-      "id": "drgrowth-deep-dive",
-      "title": "💻 拓客小博士代码深入研究",
-      "desc": "深入理解代码架构，为后续AI功能开发做准备",
-      "progress": 10,
-      "priority": "P1",
-      "tag": "技术研究"
+      "id": "xiaohongshu-skill",
+      "title": "📕 小红书种草文案生成Skill",
+      "desc": "美甲行业MVP：Prompt模板+demo脚本+集成说明",
+      "progress": 20,
+      "priority": "P0",
+      "tag": "产品开发",
+      "eta": "今日完成"
     }
   ],
   "completed": [
     {
-      "id": "xiaohongshu-pr",
-      "title": "📕 小红书种草文案MVP",
-      "desc": "PR #1 已创建，等待review",
-      "completedAt": "10:05",
-      "link": "https://github.com/cqmrkj/be-mrkj-DrGrowth/pull/1"
+      "id": "competitor-research-v2",
+      "title": "🔍 竞品调研深度版",
+      "desc": "5家竞品全维度深挖，15+来源引用",
+      "completedAt": "08:06",
+      "link": "https://feishu.cn/docx/Lt6wdW9EcoNNU2x5ee1cYjU5nnb"
     },
     {
-      "id": "competitor-research-v2",
-      "title": "🔍 竞品调研深度版 v2.0",
-      "desc": "4家竞品+市场数据+有赞AI威胁分析+行动建议",
-      "completedAt": "10:30",
-      "link": "https://feishu.cn/docx/LMt1dFb4fofLEtxRPjacny49n6g"
+      "id": "kanban-fix",
+      "title": "🔧 看板前端动态化修复",
+      "desc": "index.html从硬编码改为动态读取status.json",
+      "completedAt": "08:10"
+    },
+    {
+      "id": "cron-fix",
+      "title": "⚙️ 定时任务模型修复",
+      "desc": "3个cron任务模型前缀错误修复",
+      "completedAt": "09:00"
+    },
+    {
+      "id": "twitter-skill",
+      "title": "🐦 Twitter Skill安装+测试",
+      "desc": "aisa-twitter-api安装并迁移到ClawHub管理",
+      "completedAt": "09:52"
+    },
+    {
+      "id": "clawhub-install",
+      "title": "📦 ClawHub CLI安装+Skill迁移",
+      "desc": "安装clawhub v0.5.0，统一skill管理",
+      "completedAt": "10:00"
     },
     {
       "id": "agent-teams-research",
       "title": "📄 Agent Teams 深度调研",
-      "completedAt": "02:00"
+      "completedAt": "02:00",
+      "link": "https://feishu.cn/docx/L4aZdI8EkoIfUGxz3UmcgQBIndb"
     },
     {
       "id": "day1-retro",
-      "title": "📝 Day 1 复盘",
+      "title": "📝 Day 1 复盘与自我进化",
       "completedAt": "01:50"
-    },
-    {
-      "id": "beauty-research",
-      "title": "💆 美业行业研究",
-      "completedAt": "2/9 18:00"
-    },
-    {
-      "id": "ai-enhancement",
-      "title": "🤖 AI增强方案",
-      "completedAt": "2/9 17:00"
-    },
-    {
-      "id": "drgrowth-analysis",
-      "title": "💻 拓客小博士代码分析",
-      "completedAt": "2/9 14:00"
     }
   ],
   "planned": [
     {
-      "id": "youzan-ai-experience",
-      "title": "🔬 体验有赞AI产品",
-      "desc": "注册试用，找出差距和机会"
+      "id": "fix-feishu-400",
+      "title": "🔧 修复飞书API 400问题",
+      "priority": "P1"
     },
     {
-      "id": "xiaohongshu-v2",
-      "title": "📕 小红书种草v2：多行业支持",
-      "desc": "扩展到美容、美发场景"
+      "id": "agent-teams-pty-test",
+      "title": "🧪 Agent Teams 交互式试跑",
+      "priority": "P1"
     }
   ],
   "insights": [
-    "有赞已发布9款AI智能体，小红书种草是其中之一",
-    "差评防御是茂日独有赛道，无竞品在做",
-    "AI是唯一弯道超车机会，窗口期有限"
+    "质量>速度>数量",
+    "心跳必须执行空闲检查，不能偷懒",
+    "绝不空闲，永远创造价值"
   ]
 }
