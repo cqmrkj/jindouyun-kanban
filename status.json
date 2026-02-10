@@ -1,15 +1,14 @@
 {
-  "lastUpdate": "2026-02-11T04:05:00+08:00",
-  "inProgress": [
+  "lastUpdate": "2026-02-11T04:30:00+08:00",
+  "inProgress": [],
+  "completed": [
     {
       "id": "drgrowth-security-fix",
       "title": "🔒 拓客小博士安全加固PR",
-      "desc": "API key日志清理 + 速率限制 + 输入验证",
-      "startedAt": "04:00",
-      "priority": "P0"
-    }
-  ],
-  "completed": [
+      "desc": "API key日志清理 + 速率限制 + 输入验证，5个文件变更",
+      "completedAt": "04:30",
+      "link": "https://github.com/cqmrkj/be-mrkj-DrGrowth/pull/2"
+    },
     {
       "id": "geo-baseline",
       "title": "🌐 GEO基线测试",
