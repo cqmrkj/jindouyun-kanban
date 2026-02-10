@@ -1,16 +1,28 @@
 {
-  "lastUpdate": "2026-02-10T15:30:00+08:00",
-  "inProgress": [
+  "lastUpdate": "2026-02-10T21:30:00+08:00",
+  "inProgress": [],
+  "completed": [
+    {
+      "id": "geo-baseline",
+      "title": "🌐 GEO基线测试",
+      "desc": "测试茂日在搜索引擎中的可见度，结论：通用词搜索完全隐身",
+      "completedAt": "21:00",
+      "link": "memory/2026-02-10-geo-baseline.md"
+    },
+    {
+      "id": "drgrowth-code-review",
+      "title": "🔍 拓客小博士代码研读",
+      "desc": "4600行代码深度审查，架构8分/安全4分，12项改进建议",
+      "completedAt": "21:30",
+      "link": "memory/2026-02-10-drgrowth-code-review.md"
+    },
     {
       "id": "geo-plan",
       "title": "🌐 GEO方案执行",
       "desc": "让茂日被AI推荐 - 基线测试阶段",
-      "progress": 20,
-      "priority": "P0",
-      "tag": "品牌增长"
-    }
-  ],
-  "completed": [
+      "completedAt": "21:00",
+      "link": "https://feishu.cn/docx/C37PduKGaolv0BxYkBxcZFGKnzR"
+    },
     {
       "id": "geo-research",
       "title": "🌐 GEO方案调研与设计",
@@ -34,32 +46,27 @@
     {
       "id": "kanban-fix",
       "title": "🔧 看板前端动态化修复",
-      "desc": "index.html从硬编码改为动态读取status.json",
       "completedAt": "08:10"
     },
     {
       "id": "cron-fix",
       "title": "⚙️ 定时任务模型修复",
-      "desc": "3个cron任务模型前缀错误修复",
       "completedAt": "09:00"
     },
     {
       "id": "twitter-skill",
       "title": "🐦 Twitter Skill安装+测试",
-      "desc": "aisa-twitter-api安装并迁移到ClawHub管理",
       "completedAt": "09:52"
     },
     {
       "id": "clawhub-install",
       "title": "📦 ClawHub CLI安装+Skill迁移",
-      "desc": "安装clawhub v0.5.0，统一skill管理",
       "completedAt": "10:00"
     },
     {
       "id": "agent-teams-research",
       "title": "📄 Agent Teams 深度调研",
-      "completedAt": "02:00",
-      "link": "https://feishu.cn/docx/L4aZdI8EkoIfUGxz3UmcgQBIndb"
+      "completedAt": "02:00"
     },
     {
       "id": "day1-retro",
@@ -69,19 +76,29 @@
   ],
   "planned": [
     {
-      "id": "fix-feishu-400",
-      "title": "🔧 修复飞书API 400问题",
-      "priority": "P1"
+      "id": "geo-zhihu-content",
+      "title": "📝 知乎内容布局（GEO执行第一步）",
+      "priority": "P0"
+    },
+    {
+      "id": "drgrowth-security-fix",
+      "title": "🔒 拓客小博士安全加固PR",
+      "priority": "P0"
     },
     {
       "id": "agent-teams-pty-test",
       "title": "🧪 Agent Teams 交互式试跑",
       "priority": "P1"
+    },
+    {
+      "id": "install-remaining-skills",
+      "title": "📦 安装剩余必装Skill",
+      "priority": "P2"
     }
   ],
   "insights": [
-    "质量>速度>数量",
-    "心跳必须执行空闲检查，不能偷懒",
-    "绝不空闲，永远创造价值"
+    "茂日在通用搜索中完全隐身，GEO是紧急任务",
+    "拓客小博士架构优秀但安全评分仅4/10",
+    "差评防御是茂日独有赛道，值得重点投入"
   ]
 }
