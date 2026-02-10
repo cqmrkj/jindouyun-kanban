@@ -1,5 +1,5 @@
 {
-  "lastUpdate": "2026-02-10T02:18:00+08:00",
+  "lastUpdate": "2026-02-10T08:10:00+08:00",
   "inProgress": [
     {
       "id": "xiaohongshu-skill",
@@ -8,14 +8,20 @@
       "progress": 5,
       "priority": "P0",
       "tag": "产品开发",
-      "eta": "调研中"
+      "eta": "今日MVP"
     }
   ],
   "completed": [
     {
+      "id": "competitor-research-v2",
+      "title": "🔍 竞品调研深度版",
+      "desc": "5家竞品全维度深挖，15+来源引用，飞书文档已创建",
+      "completedAt": "08:06",
+      "link": "https://feishu.cn/docx/Lt6wdW9EcoNNU2x5ee1cYjU5nnb"
+    },
+    {
       "id": "agent-teams-research",
       "title": "📄 Agent Teams 深度调研",
-      "desc": "8个信息源，飞书文档已创建",
       "completedAt": "02:00",
       "link": "https://feishu.cn/docx/L4aZdI8EkoIfUGxz3UmcgQBIndb"
     },
@@ -47,13 +53,14 @@
   ],
   "planned": [
     {
-      "id": "competitor-research-v2",
-      "title": "🔍 竞品调研深度版",
-      "priority": "high"
+      "id": "fix-feishu-400",
+      "title": "🔧 修复飞书API 400问题",
+      "priority": "P1"
     },
     {
-      "id": "fix-feishu-400",
-      "title": "🔧 修复飞书API 400问题"
+      "id": "agent-teams-pty-test",
+      "title": "🧪 Agent Teams 交互式试跑",
+      "priority": "P1"
     }
   ],
   "insights": [
