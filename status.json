@@ -1,8 +1,23 @@
 {
-  "lastUpdate": "2026-02-10T12:52:00+08:00",
+  "lastUpdate": "2026-02-10T15:30:00+08:00",
   "inProgress": [
+    {
+      "id": "geo-plan",
+      "title": "🌐 GEO方案执行",
+      "desc": "让茂日被AI推荐 - 基线测试阶段",
+      "progress": 20,
+      "priority": "P0",
+      "tag": "品牌增长"
+    }
   ],
   "completed": [
+    {
+      "id": "geo-research",
+      "title": "🌐 GEO方案调研与设计",
+      "desc": "6步执行方案，飞书文档已创建",
+      "completedAt": "15:30",
+      "link": "https://feishu.cn/docx/C37PduKGaolv0BxYkBxcZFGKnzR"
+    },
     {
       "id": "xiaohongshu-skill",
       "title": "📕 小红书种草文案生成Skill MVP",
