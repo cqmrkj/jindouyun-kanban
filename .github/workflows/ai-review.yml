@@ -1,0 +1,104 @@
+name: AI Code Review
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+concurrency:
+  group: codex-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  codex-review:
+    name: Codex Code Review
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Checkout PR merge commit
+        uses: actions/checkout@v5
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/merge
+
+      - name: Fetch base and head refs
+        run: |
+          set -euxo pipefail
+          git fetch --no-tags origin \
+            "${{ github.event.pull_request.base.ref }}" \
+            +refs/pull/${{ github.event.pull_request.number }}/head
+
+      - name: Build review prompt
+        run: |
+          set -euo pipefail
+          cat <<'PROMPT' > codex-prompt.md
+          你是茂日软件的高级代码审查员，正在审查一个 Pull Request。
+          请用中文回复。
+
+          审查重点（按严重程度排序）：
+          - P0 正确性：逻辑错误、边界条件、空值处理
+          - P1 安全性：XSS、注入、敏感信息泄漏
+          - P2 性能：不必要的渲染、N+1 查询、内存泄漏
+          - P3 可维护性：命名规范、代码重复、复杂度
+          - P3 最佳实践：React/Next.js/TypeScript 惯用写法
+
+          只标记本次 PR 引入的实际问题，避免无关紧要的 nit 评论。
+          标记问题时，引用准确的文件和行号。
+          最后给出总体判断（patch is correct / patch is incorrect）和置信度（0-1）。
+          PROMPT
+
+          {
+            echo ""
+            echo "Repository: ${REPOSITORY}"
+            echo "Pull Request #: ${PR_NUMBER}"
+            echo "Base ref: ${{ github.event.pull_request.base.ref }}"
+            echo "Head ref: ${{ github.event.pull_request.head.ref }}"
+            echo "Base SHA: ${BASE_SHA}"
+            echo "Head SHA: ${HEAD_SHA}"
+            echo ""
+            echo "Changed files:"
+            git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}"
+            echo ""
+            echo "Diff stats:"
+            git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}"
+            echo ""
+            echo "Unified diff (context=5):"
+            git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}"
+          } >> codex-prompt.md
+
+      - name: Run Codex review
+        id: run-codex
+        uses: openai/codex-action@main
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          responses-api-endpoint: http://54.145.188.241:8080/v1/responses
+          prompt-file: codex-prompt.md
+          output-file: codex-output.txt
+          sandbox: read-only
+          model: gpt-5.3-codex
+
+      - name: Post review comment
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ ! -s codex-output.txt ]; then
+            echo "⚠️ Codex 未生成输出，跳过评论。"
+            exit 0
+          fi
+
+          REVIEW=$(cat codex-output.txt)
+          BODY=$(printf '🤖 **Codex Code Review**\n\n%s' "$REVIEW")
+
+          jq -n --arg body "$BODY" '{body: $body}' | \
+            curl -sS -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              -d @-
