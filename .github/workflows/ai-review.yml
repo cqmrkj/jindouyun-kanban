@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   codex-review:
-    name: Codex Code Review
+    name: GPT-5.3 Code Review
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
+          fetch-depth: 0
 
       - name: Fetch base and head refs
         run: |
@@ -34,42 +35,64 @@ jobs:
             "${{ github.event.pull_request.base.ref }}" \
             +refs/pull/${{ github.event.pull_request.number }}/head
 
+      - name: Get PR context
+        id: pr-context
+        run: |
+          set -euo pipefail
+          PR_INFO=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}")
+          echo "pr_title=$(echo "$PR_INFO" | jq -r '.title // "N/A"')" >> "$GITHUB_OUTPUT"
+          echo "$PR_INFO" | jq -r '.body // "无描述"' > pr_body.txt
+
       - name: Build review prompt
         run: |
           set -euo pipefail
           cat <<'PROMPT' > codex-prompt.md
-          你是茂日软件的高级代码审查员，正在审查一个 Pull Request。
-          请用中文回复。
+          你是茂日软件的高级代码审查员，正在审查一个 React/TypeScript 前端 Pull Request。
+          项目技术栈: React 18 + @umijs/max 4 + TypeScript + shadcn/ui
 
-          审查重点（按严重程度排序）：
-          - P0 正确性：逻辑错误、边界条件、空值处理
-          - P1 安全性：XSS、注入、敏感信息泄漏
-          - P2 性能：不必要的渲染、N+1 查询、内存泄漏
-          - P3 可维护性：命名规范、代码重复、复杂度
-          - P3 最佳实践：React/Next.js/TypeScript 惯用写法
+          ## 审查规则
+          - 只标记本次 PR diff 引入的实际问题，不评论未改动的代码
+          - 只报告 P0-P2 级别问题，P3 及以下仅在模式性问题时合并提及
+          - 如果没有发现 P0-P2 问题，只输出: {"issues":[],"summary":"LGTM","verdict":"correct","confidence":0.95}
+          - P0 正确性：逻辑错误、状态管理 bug、条件渲染错误、类型断言错误
+          - P1 安全性：XSS、dangerouslySetInnerHTML、敏感信息泄漏、eval
+          - P2 性能/可靠性：不必要的重渲染、useEffect 依赖缺失、大数组在 render 中 map、内存泄漏
 
-          只标记本次 PR 引入的实际问题，避免无关紧要的 nit 评论。
-          标记问题时，引用准确的文件和行号。
-          最后给出总体判断（patch is correct / patch is incorrect）和置信度（0-1）。
+          ## 输出格式（严格 JSON，不要输出任何其他内容，不要用 markdown code fence 包裹）
+          {"issues":[{"severity":"P0","category":"正确性","file":"src/pages/example/index.tsx","line":42,"title":"简短标题","description":"详细描述","suggestion":"修复建议"}],"summary":"一句话总结","verdict":"correct 或 incorrect","confidence":0.95}
+
+          严格要求：
+          1. file 字段使用相对路径（不含前导 /，从 src/ 开始）
+          2. line 字段必须是 diff 中实际存在的行号
+          3. 只输出一行合法 JSON，不要前后文、不要 markdown 包裹
           PROMPT
 
           {
             echo ""
+            echo "## PR 信息"
             echo "Repository: ${REPOSITORY}"
-            echo "Pull Request #: ${PR_NUMBER}"
-            echo "Base ref: ${{ github.event.pull_request.base.ref }}"
-            echo "Head ref: ${{ github.event.pull_request.head.ref }}"
-            echo "Base SHA: ${BASE_SHA}"
-            echo "Head SHA: ${HEAD_SHA}"
+            echo "PR #${PR_NUMBER}: ${{ steps.pr-context.outputs.pr_title }}"
             echo ""
-            echo "Changed files:"
-            git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}"
+            echo "### PR 描述"
+            cat pr_body.txt
             echo ""
-            echo "Diff stats:"
-            git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}"
+            echo "## 变更文件列表"
+            git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}" \
+              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
             echo ""
-            echo "Unified diff (context=5):"
-            git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}"
+            echo "## Diff 统计"
+            git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}" \
+              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
+            echo ""
+            echo "## Unified Diff (context=5)"
+            git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}" \
+              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
           } >> codex-prompt.md
 
       - name: Run Codex review
@@ -83,7 +106,7 @@ jobs:
           sandbox: read-only
           model: gpt-5.3-codex
 
-      - name: Post review comment
+      - name: Post inline review comments
         if: always()
         run: |
           set -euo pipefail
@@ -92,13 +115,141 @@ jobs:
             exit 0
           fi
 
-          REVIEW=$(cat codex-output.txt)
-          BODY=$(printf '🤖 **Codex Code Review**\n\n%s' "$REVIEW")
+          RAW=$(cat codex-output.txt)
 
-          jq -n --arg body "$BODY" '{body: $body}' | \
-            curl -sS -X POST \
+          # 提取 JSON
+          JSON=$(echo "$RAW" | sed -n '/```json/,/```/{/```/d;p}')
+          if [ -z "$JSON" ]; then
+            JSON=$(echo "$RAW" | sed -n '/{/,/}/p' | head -200)
+          fi
+          if [ -z "$JSON" ]; then
+            JSON="$RAW"
+          fi
+
+          # 验证 JSON
+          if ! echo "$JSON" | jq empty 2>/dev/null; then
+            echo "⚠️ 非 JSON 输出，回退到普通评论"
+            BODY=$(printf '🤖 **GPT-5.3 Code Review**\n\n%s' "$RAW")
+            jq -n --arg body "$BODY" '{body: $body}' | \
+              curl -sS -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+                -d @-
+            exit 0
+          fi
+
+          VERDICT=$(echo "$JSON" | jq -r '.verdict // "unknown"')
+          CONFIDENCE=$(echo "$JSON" | jq -r '.confidence // "N/A"')
+          SUMMARY=$(echo "$JSON" | jq -r '.summary // "无总结"')
+          ISSUE_COUNT=$(echo "$JSON" | jq '.issues | length')
+
+          REVIEW_COMMENTS="[]"
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            for i in $(seq 0 $((ISSUE_COUNT - 1))); do
+              SEV=$(echo "$JSON" | jq -r ".issues[$i].severity")
+              TITLE=$(echo "$JSON" | jq -r ".issues[$i].title")
+              DESC=$(echo "$JSON" | jq -r ".issues[$i].description")
+              SUGG=$(echo "$JSON" | jq -r ".issues[$i].suggestion")
+              FILE=$(echo "$JSON" | jq -r ".issues[$i].file")
+              LINE=$(echo "$JSON" | jq -r ".issues[$i].line")
+
+              case "$SEV" in
+                P0) COLOR="red" ;;
+                P1) COLOR="orange" ;;
+                P2) COLOR="yellow" ;;
+                *)  COLOR="lightgrey" ;;
+              esac
+
+              COMMENT_BODY="**![${SEV}](https://img.shields.io/badge/${SEV}-${COLOR}?style=flat)  ${TITLE}**
+
+          ${DESC}
+
+          **建议:** ${SUGG}
+
+          ---
+          _不同意? 回复 \`@wukong 你的理由\` 进行讨论 | 👍 有帮助 · 👎 误报_"
+
+              REVIEW_COMMENTS=$(echo "$REVIEW_COMMENTS" | jq \
+                --arg path "$FILE" \
+                --argjson line "${LINE:-1}" \
+                --arg body "$COMMENT_BODY" \
+                '. + [{"path": $path, "line": $line, "side": "RIGHT", "body": $body}]')
+            done
+          fi
+
+          if [ "$ISSUE_COUNT" -gt 0 ]; then
+            EVENT="COMMENT"
+            if echo "$JSON" | jq -e '.issues[] | select(.severity == "P0")' > /dev/null 2>&1; then
+              EVENT="REQUEST_CHANGES"
+            fi
+
+            REVIEW_BODY="### 🤖 GPT-5.3 Code Review
+
+          | 指标 | 值 |
+          |------|-----|
+          | 问题数 | ${ISSUE_COUNT} |
+          | 判断 | ${VERDICT} |
+          | 置信度 | ${CONFIDENCE} |
+
+          **总结:** ${SUMMARY}"
+
+            RESPONSE=$(jq -n \
+              --arg commit_id "${HEAD_SHA}" \
+              --arg body "$REVIEW_BODY" \
+              --arg event "$EVENT" \
+              --argjson comments "$REVIEW_COMMENTS" \
+              '{commit_id: $commit_id, body: $body, event: $event, comments: $comments}' | \
+            curl -sS -w "\n%{http_code}" -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${GITHUB_TOKEN}" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
-              -d @-
+              "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/reviews" \
+              -d @-)
+
+            HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+            if [ "$HTTP_CODE" -ge 400 ]; then
+              echo "⚠️ Review API 返回 ${HTTP_CODE}，回退到普通评论"
+              FALLBACK_BODY="### 🤖 GPT-5.3 Code Review
+
+          ${SUMMARY}
+
+          "
+              for i in $(seq 0 $((ISSUE_COUNT - 1))); do
+                SEV=$(echo "$JSON" | jq -r ".issues[$i].severity")
+                FILE=$(echo "$JSON" | jq -r ".issues[$i].file")
+                LINE=$(echo "$JSON" | jq -r ".issues[$i].line")
+                TITLE=$(echo "$JSON" | jq -r ".issues[$i].title")
+                DESC=$(echo "$JSON" | jq -r ".issues[$i].description")
+                FALLBACK_BODY="${FALLBACK_BODY}
+          **${SEV}** \`${FILE}:${LINE}\` — ${TITLE}
+          ${DESC}
+
+          "
+              done
+              FALLBACK_BODY="${FALLBACK_BODY}
+          判断: ${VERDICT} | 置信度: ${CONFIDENCE}"
+
+              jq -n --arg body "$FALLBACK_BODY" '{body: $body}' | \
+                curl -sS -X POST \
+                  -H "Accept: application/vnd.github+json" \
+                  -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                  -H "X-GitHub-Api-Version: 2022-11-28" \
+                  "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+                  -d @-
+            fi
+          else
+            BODY="### 🤖 GPT-5.3 Code Review
+
+          ✅ **LGTM** — ${SUMMARY}
+
+          置信度: ${CONFIDENCE}"
+            jq -n --arg body "$BODY" '{body: $body}' | \
+              curl -sS -X POST \
+                -H "Accept: application/vnd.github+json" \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+                -d @-
+          fi
