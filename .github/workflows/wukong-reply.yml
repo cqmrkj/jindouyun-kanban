@@ -1,0 +1,131 @@
+name: Wukong Reply Bot
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: wukong-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  wukong-reply:
+    name: Wukong AI Reply
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '@wukong')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      COMMENT_ID: ${{ github.event.comment.id }}
+      PR_NUMBER: ${{ github.event.issue.number }}
+      REPOSITORY: ${{ github.repository }}
+    steps:
+      - name: Acknowledge with eyes reaction
+        run: |
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/issues/comments/${COMMENT_ID}/reactions" \
+            -d '{"content":"eyes"}'
+
+      - name: Build context and prompt
+        run: |
+          set -euo pipefail
+
+          # 获取触发评论的内容和作者
+          COMMENT_INFO=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/issues/comments/${COMMENT_ID}")
+          COMMENT_USER=$(echo "$COMMENT_INFO" | jq -r '.user.login')
+          COMMENT_BODY=$(echo "$COMMENT_INFO" | jq -r '.body')
+
+          # 获取 PR 评论历史（最近 30 条）
+          PR_COMMENTS=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments?per_page=30" | \
+            jq '[.[] | {user: .user.login, body: .body[:500], at: .created_at}]')
+
+          # 获取 review 行内评论
+          REVIEW_COMMENTS=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/comments?per_page=30" | \
+            jq '[.[] | {user: .user.login, body: .body[:500], path: .path, line: .line, at: .created_at}]')
+
+          # 获取 PR diff（限制大小避免 token 爆炸）
+          PR_DIFF=$(curl -sS \
+            -H "Accept: application/vnd.github.v3.diff" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}" | head -500)
+
+          # 构建 prompt
+          cat > wukong-prompt.md <<WUKONG_EOF
+          你是茂日软件的 AI 代码审查助手"悟空"(🐵)。
+          开发者 @${COMMENT_USER} 对之前的代码评审意见有疑问或异议，请你重新审视并给出专业回复。
+
+          ## 开发者的评论
+          ${COMMENT_BODY}
+
+          ## 之前的行内评审评论
+          ${REVIEW_COMMENTS}
+
+          ## 之前的 PR 评论
+          ${PR_COMMENTS}
+
+          ## PR Diff（部分）
+          ${PR_DIFF}
+
+          ## 回复规则
+          1. 用中文回复，保持专业友善的语气
+          2. 如果开发者说的有道理，坦诚承认之前的评审判断有误，并解释原因
+          3. 如果评审意见确实正确，耐心解释为什么这是个问题，引用具体代码
+          4. 给出明确的结论：维持原判 / 撤回意见 / 降级严重性
+          5. 直接用 Markdown 格式回复，不要输出 JSON
+          6. 回复控制在 300 字以内，言简意赅
+          WUKONG_EOF
+
+      - name: Run Wukong analysis
+        id: wukong
+        uses: openai/codex-action@main
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          responses-api-endpoint: http://54.145.188.241:8080/v1/responses
+          prompt-file: wukong-prompt.md
+          output-file: wukong-output.txt
+          sandbox: read-only
+          model: gpt-5.3-codex
+
+      - name: Post reply
+        if: always()
+        run: |
+          set -euo pipefail
+
+          # 获取评论者用户名
+          COMMENT_USER=$(curl -sS \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            "https://api.github.com/repos/${REPOSITORY}/issues/comments/${COMMENT_ID}" | \
+            jq -r '.user.login')
+
+          if [ ! -s wukong-output.txt ]; then
+            REPLY="抱歉，我暂时无法分析这个问题。请稍后再试或联系 @lucasofxxf。"
+          else
+            REPLY=$(cat wukong-output.txt)
+          fi
+
+          BODY=$(printf '🐵 **悟空回复 @%s**\n\n%s\n\n---\n_继续讨论? 回复 `@wukong 你的问题`_' "$COMMENT_USER" "$REPLY")
+
+          jq -n --arg body "$BODY" '{body: $body}' | \
+            curl -sS -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/${REPOSITORY}/issues/${PR_NUMBER}/comments" \
+              -d @-
