@@ -13,7 +13,7 @@ jobs:
     name: Wukong AI Reply
     if: |
       github.event.issue.pull_request &&
-      contains(github.event.comment.body, '@wukong')
+      github.event.comment.user.login != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -120,7 +120,7 @@ jobs:
             REPLY=$(cat wukong-output.txt)
           fi
 
-          BODY=$(printf '🐵 **悟空回复 @%s**\n\n%s\n\n---\n_继续讨论? 回复 `@wukong 你的问题`_' "$COMMENT_USER" "$REPLY")
+          BODY=$(printf '🐵 **悟空回复 @%s**\n\n%s\n\n---\n_继续讨论? 直接回复即可_' "$COMMENT_USER" "$REPLY")
 
           jq -n --arg body "$BODY" '{body: $body}' | \
             curl -sS -X POST \
