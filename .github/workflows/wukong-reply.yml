@@ -60,10 +60,11 @@ jobs:
             jq '[.[] | {user: .user.login, body: .body[:500], path: .path, line: .line, at: .created_at}]')
 
           # 获取 PR diff（限制大小避免 token 爆炸）
-          PR_DIFF=$(curl -sS \
+          PR_DIFF_FULL=$(curl -sS \
             -H "Accept: application/vnd.github.v3.diff" \
             -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}" | head -500)
+            "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}")
+          PR_DIFF=$(echo "$PR_DIFF_FULL" | head -500)
 
           # 构建 prompt
           cat > wukong-prompt.md <<WUKONG_EOF
