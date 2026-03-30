@@ -60,6 +60,7 @@ jobs:
           - P0 正确性：逻辑错误、状态管理 bug、条件渲染错误、类型断言错误
           - P1 安全性：XSS、dangerouslySetInnerHTML、敏感信息泄漏、eval
           - P2 性能/可靠性：不必要的重渲染、useEffect 依赖缺失、大数组在 render 中 map、内存泄漏
+          - 重要：如果"已讨论的评审历史"中某个问题已被开发者解释合理或标记为已修复，不要重复标记该问题
 
           ## 输出格式（严格 JSON，不要输出任何其他内容，不要用 markdown code fence 包裹）
           {"issues":[{"severity":"P0","category":"正确性","file":"src/pages/example/index.tsx","line":42,"title":"简短标题","description":"详细描述","suggestion":"修复建议"}],"summary":"一句话总结","verdict":"correct 或 incorrect","confidence":0.95}
@@ -96,6 +97,13 @@ jobs:
               -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
               ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
               ':!**/src/interface/**'
+            echo ""
+            echo "## 已讨论的评审历史（不要重复标记已解释/已修复的问题）"
+            curl -sS \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              "https://api.github.com/repos/${REPOSITORY}/pulls/${PR_NUMBER}/comments?per_page=100" | \
+              jq '[.[] | {user: .user.login, path: .path, line: .line, body: .body[:300]}]'
           } >> codex-prompt.md
 
       - name: Run Codex review
