@@ -82,21 +82,21 @@ jobs:
             echo ""
             echo "## 变更文件列表"
             git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}" \
-              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
-              ':!**/src/interface/**'
+              -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
+              ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
+              ':(exclude,glob)**/src/interface/**'
             echo ""
             echo "## Diff 统计"
             git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}" \
-              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
-              ':!**/src/interface/**'
+              -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
+              ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
+              ':(exclude,glob)**/src/interface/**'
             echo ""
             echo "## Unified Diff (context=5)"
             git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}" \
-              -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
-              ':!**/src/interface/**'
+              -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
+              ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
+              ':(exclude,glob)**/src/interface/**'
             echo ""
             echo "## 已讨论的评审历史（不要重复标记已解释/已修复的问题）"
             curl -sS \
