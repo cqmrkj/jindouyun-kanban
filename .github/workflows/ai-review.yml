@@ -82,17 +82,20 @@ jobs:
             echo "## 变更文件列表"
             git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}" \
               -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
+              ':!**/src/interface/**'
             echo ""
             echo "## Diff 统计"
             git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}" \
               -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
+              ':!**/src/interface/**'
             echo ""
             echo "## Unified Diff (context=5)"
             git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}" \
               -- . ':!**/pnpm-lock.yaml' ':!**/package-lock.json' ':!**/dist/**' \
-              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map'
+              ':!**/.umi/**' ':!**/*.min.js' ':!**/*.min.css' ':!**/*.map' \
+              ':!**/src/interface/**'
           } >> codex-prompt.md
 
       - name: Run Codex review
