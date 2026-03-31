@@ -46,7 +46,17 @@ jobs:
           echo "pr_title=$(echo "$PR_INFO" | jq -r '.title // "N/A"')" >> "$GITHUB_OUTPUT"
           echo "$PR_INFO" | jq -r '.body // "无描述"' > pr_body.txt
 
+      - name: Compute merge base
+        id: merge-base
+        run: |
+          set -euo pipefail
+          MERGE_BASE=$(git merge-base "${BASE_SHA}" "${HEAD_SHA}")
+          echo "sha=${MERGE_BASE}" >> "$GITHUB_OUTPUT"
+          echo "✅ merge-base: ${MERGE_BASE} (BASE_SHA=${BASE_SHA}, HEAD_SHA=${HEAD_SHA})"
+
       - name: Build review prompt
+        env:
+          MERGE_BASE: ${{ steps.merge-base.outputs.sha }}
         run: |
           set -euo pipefail
           cat <<'PROMPT' > codex-prompt.md
@@ -81,19 +91,19 @@ jobs:
             cat pr_body.txt
             echo ""
             echo "## 变更文件列表"
-            git --no-pager diff --name-status "${BASE_SHA}" "${HEAD_SHA}" \
+            git --no-pager diff --name-status "${MERGE_BASE}" "${HEAD_SHA}" \
               -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
               ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
               ':(exclude,glob)**/src/interface/**'
             echo ""
             echo "## Diff 统计"
-            git --no-pager diff --unified=5 --stat=200 "${BASE_SHA}" "${HEAD_SHA}" \
+            git --no-pager diff --unified=5 --stat=200 "${MERGE_BASE}" "${HEAD_SHA}" \
               -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
               ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
               ':(exclude,glob)**/src/interface/**'
             echo ""
             echo "## Unified Diff (context=5)"
-            git --no-pager diff --unified=5 "${BASE_SHA}" "${HEAD_SHA}" \
+            git --no-pager diff --unified=5 "${MERGE_BASE}" "${HEAD_SHA}" \
               -- . ':(exclude,glob)**/pnpm-lock.yaml' ':(exclude,glob)**/package-lock.json' ':(exclude,glob)**/dist/**' \
               ':(exclude,glob)**/.umi/**' ':(exclude,glob)**/*.min.js' ':(exclude,glob)**/*.min.css' ':(exclude,glob)**/*.map' \
               ':(exclude,glob)**/src/interface/**'
