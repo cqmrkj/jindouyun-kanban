@@ -130,7 +130,7 @@ jobs:
         uses: openai/codex-action@main
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          responses-api-endpoint: http://54.145.188.241:8080/v1/responses
+          responses-api-endpoint: ${{ vars.CODEX_API_ENDPOINT }}
           prompt-file: wukong-prompt.md
           output-file: wukong-output.txt
           sandbox: read-only
