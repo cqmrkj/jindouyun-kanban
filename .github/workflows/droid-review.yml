@@ -36,6 +36,7 @@ jobs:
           automatic_review: true
           automatic_security_review: false
           review_model: claude-sonnet-4-6
+          reasoning_effort: medium
 
       - name: Compute Review Gate
         if: always()
@@ -59,6 +60,19 @@ jobs:
             gh api "repos/${REPO}/statuses/${PR_HEAD_SHA}" -f state=failure -f context=droid-review/gate \
               -f description="评审未产出结果，请重跑或评论 @droid 复评" -f target_url="$RUN_URL" >/dev/null
             echo "评审未产出 review_validated.json，已在 ${PR_HEAD_SHA} 标记 failure"
+            exit 0
+          fi
+
+          if ! jq empty "$FILE" >/dev/null 2>&1; then
+            SHA="${PR_HEAD_SHA}"
+            if [ -z "$SHA" ] && [ -n "${PR_NUMBER}" ]; then
+              SHA=$(gh api "repos/${REPO}/pulls/${PR_NUMBER}" --jq .head.sha)
+            fi
+            if [ -n "$SHA" ]; then
+              gh api "repos/${REPO}/statuses/${SHA}" -f state=failure -f context=droid-review/gate \
+                -f description="评审产物 JSON 损坏，请重新评论 @droid 复评" -f target_url="$RUN_URL" >/dev/null
+            fi
+            echo "review_validated.json 不是合法 JSON，已标记 failure"
             exit 0
           fi
 
