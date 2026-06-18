@@ -1,0 +1,23 @@
+# 业务仓瘦 caller：PR 自动评审。部署到每个业务仓 .github/workflows/mimo-review.yml。
+# 保留「opened/ready_for_review/reopened，刻意不含 synchronize」的成本控制——push 不重评，靠 @review 手动复评。
+name: mimo Auto Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+concurrency:
+  group: mimo-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event.pull_request.draft == false && github.event.pull_request.user.type != 'Bot'
+    uses: cqmrkj/.github/.github/workflows/mimo-review-reusable.yml@v1
+    with:
+      target_repo: ${{ github.repository }}
+      pr_number: ${{ github.event.pull_request.number }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      gate_mode: auto
+    secrets:
+      MIMO_TOKEN_PLAN_KEY: ${{ secrets.MIMO_TOKEN_PLAN_KEY }}
